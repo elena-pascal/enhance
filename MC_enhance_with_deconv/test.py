@@ -1,31 +1,22 @@
 import numpy as np
-from enhance import Detector, Spot, MCProjection
+from spot_enhance import Detector, Spot
+import pytest
 
 
-def test_mc_result():
-    # pixel depth
-    depth = 1  # mm
+def test_psf():
+    import detector_data
+    pilatus_det = Detector(pixel_size=detector_data.pixel_size,
+                           depth=detector_data.depth,
+                           mu=detector_data.mu,
+                           normal=detector_data.normal)
 
-    # pixel size
-    px_x = 0.172  # mm
-    px_y = 0.172  # mm
+    import spot_data
+    spot = Spot(intensity_map=spot_data.intensity_map,
+                s1=spot_data.s1_vector,
+                detector=pilatus_det)
 
-    # absorption factor
-    mu = 0.6245  # mm^-1
+    psf = spot.psf
 
-    detector = Detector(px_x, px_y, depth, mu)
+    expected_psf = np.load('data/expected_psf.npy')
 
-    intensity_all = np.load('data/pixel_array.npy')
-    intensity_first, _, _ = intensity_all.astype(np.int8)
-
-    s1_all = np.load('data/s1_vectors.npy')
-    s1_first = s1_all[:49].reshape(7, 7, 3)
-
-    spot = Spot(intensity_first, s1_first, detector)
-
-    np.random.seed(0)
-    projection = MCProjection(spot, detector, 100)
-
-    computed_projection = np.load('data/deterministic_prob_map.npy')
-
-    assert np.array_equal(projection.prob_map, computed_projection)
+    assert np.array_equal(psf, expected_psf)

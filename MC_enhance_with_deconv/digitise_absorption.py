@@ -1,5 +1,5 @@
 import numpy as np
-from typing import NamedTuple
+from typing import NamedTuple, Tuple, List
 
 
 class Point(NamedTuple):
@@ -13,14 +13,14 @@ class Point(NamedTuple):
 
 class Pixel(NamedTuple):
     """
-    a point in 2D with x, y coords
+    a pixel with x, y coords
     """
 
     x: int
     y: int
 
 
-def digitise_path(entry_pos, exit_pos, px_norm):
+def digitise_path(entry_pos: Point, exit_pos: Point, px_norm: Tuple) -> Tuple[List, np.array]:
     """
     For a given entry and exit position, find the pixels
     traversed and the path in those pixels.
@@ -127,11 +127,11 @@ def digitise_path(entry_pos, exit_pos, px_norm):
     return pixels, px_path_lens
 
 
-def get_exit_pos(entry_pos, s1):
-    return entry_pos + s1[:2] / abs(s1[2])
+def get_exit_pos(entry_pos: Point, s1: np.array) -> Point:
+    return Point(*(entry_pos + s1[:2] / abs(s1[2])))
 
 
-def pathlength_from_proj(px_path_lens_proj, px_norm, s1):
+def pathlength_from_proj(px_path_lens_proj: np.array, px_norm: np.array, s1: np.array) -> np.array:
     """
     From path length projection on detector surface
     return the full path length inside detector
@@ -146,7 +146,7 @@ def pathlength_from_proj(px_path_lens_proj, px_norm, s1):
         return px_path_lens_proj / np.sqrt(1 - s_dot_n * s_dot_n)
 
 
-def get_abs_per_pixel(s1, px_norm, spot_size, mu):
+def get_abs_per_pixel(s1: np.array, px_norm: np.array, spot_size: int, mu: float) -> Tuple:
     """
     Compute intensity absorption per pixel (ie digitise)
     Using the path per pixel compute then the absorption per pixel
@@ -155,16 +155,19 @@ def get_abs_per_pixel(s1, px_norm, spot_size, mu):
     where s is the mean free path
     and l is the path travelled
 
-    Params
-    -------
-    s1: s1 vector in detector frame
-    spot_size: side edge of spot
+    :param s1: s1 vector in detector frame
+    :param px_norm: pixel dimensions
+    :param spot_size: side edge of spot
+    :param mu: absorption factor
+
+    :returns pixels, abs_per_pixel: the transversed pixels and the absorption per pixel
+
     """
-    entry_pos = np.array([spot_size//2+0.5, spot_size//2+0.5])
+    entry_pos = Point(spot_size//2+0.5, spot_size//2+0.5)
 
     exit_pos = get_exit_pos(entry_pos, s1)
 
-    pixels, px_path_lens_proj = digitise_path(Point(*entry_pos), Point(*exit_pos), px_norm)
+    pixels, px_path_lens_proj = digitise_path(entry_pos, exit_pos, px_norm)
     px_path_lens = pathlength_from_proj(px_path_lens_proj, px_norm, s1)
 
     int_per_pixel = np.exp(-mu * px_path_lens)
