@@ -137,14 +137,13 @@ class Spot:
 
 if __name__ == "__main__":
     # make detector instance
-    import detector_data
+    from data import detector_data, spot_data
     pilatus_det = Detector(pixel_size=detector_data.pixel_size,
                            depth=detector_data.depth,
                            mu=detector_data.mu,
                            normal=detector_data.normal)
 
     # make a spot instance
-    import spot_data
     spot = Spot(intensity_map=spot_data.intensity_map,
                 s1=spot_data.s1_vector,
                 detector=pilatus_det)
