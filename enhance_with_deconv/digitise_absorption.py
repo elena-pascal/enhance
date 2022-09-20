@@ -27,7 +27,7 @@ def digitise_path(entry_pos: Point, exit_pos: Point, px_norm: np.array) -> Tuple
 
     A notebook exploring benefits and limitation of a number of
     different algorithms can be found at:
-    https://github.com/DiamondLightSource/dials_research/blob/ssx_work/ssx_work/detector_effects/MC_notebook/line_digitisation.ipynb
+    https://github.com/elena-pascal/enhance/blob/9077a5c9d96a8c9a6de8faee5c98cecda735183b/notebooks/line_digitisation.ipynb
 
     This implemented algorithm follows the ray equation:
             𝑝𝑜𝑖𝑛𝑡(𝑡)=𝑢+𝑡𝑣
