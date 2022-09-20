@@ -20,7 +20,7 @@ class Pixel(NamedTuple):
     y: int
 
 
-def digitise_path(entry_pos: Point, exit_pos: Point, px_norm: Tuple) -> Tuple[List, np.array]:
+def digitise_path(entry_pos: Point, exit_pos: Point, px_norm: np.array) -> Tuple[List, np.array]:
     """
     For a given entry and exit position, find the pixels
     traversed and the path in those pixels.
